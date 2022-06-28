@@ -17,7 +17,6 @@ module.exports = {
     'plugin:prettier/recommended'
   ],
   rules: {
-    'no-console': 'warn',
     'no-debugger': 'error',
     'no-inner-declarations': 'warn',
     'block-scoped-var': 'error',
