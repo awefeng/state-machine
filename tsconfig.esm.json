@@ -7,7 +7,7 @@
     "strict": true,
     "allowJs": false,
     "noUnusedLocals": true,
-    "removeComments": true,
+    "removeComments": false,
     "skipLibCheck": true,
     "importHelpers": true,
     "esModuleInterop": true,
@@ -23,7 +23,8 @@
     "declaration": true
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "types/**/*.d.ts"
   ],
   "exclude": [
     "dist",

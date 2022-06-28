@@ -1,5 +1,5 @@
 {
-  "name": "@awefeng/npm-template",
+  "name": "@awefeng/state-machine",
   "version": "1.0.0",
   "publishConfig": {
     "access": "public"
@@ -13,16 +13,22 @@
   "license": "MIT",
   "main": "dist/index.js",
   "module": "esm/index.js",
-  "keywords": ["template", "npm"],
-  "homepage": "https://github.com/awefeng/npm-template",
-  "bugs": {"url": "https://github.com/awefeng/npm-template/issues"},
+  "keywords": [
+    "template",
+    "npm"
+  ],
+  "homepage": "https://github.com/awefeng/state-machine",
+  "bugs": {
+    "url": "https://github.com/awefeng/state-machine/issues"
+  },
   "repository": {
-    "url": "https://github.com/awefeng/npm-template.git",
+    "url": "https://github.com/awefeng/state-machine.git",
     "type": "git"
   },
   "files": [
     "dist",
     "esm",
+    "types",
     "bin",
     "README.md",
     "LICENSE"
@@ -31,7 +37,6 @@
   "scripts": {
     "build": "rollup --config rollup.config.js"
   },
-
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.18.5",
     "@babel/preset-env": "^7.18.2",
