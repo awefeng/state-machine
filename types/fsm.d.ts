@@ -1,8 +1,19 @@
-declare type ActionCallback = (from: string, to: string, event: string) => void
+declare type ActionCallback = (transite: {
+  from: string
+  to: string
+  event: string
+}) => void
+
+export declare type HistoryType = 'setState' | 'transite'
 
 export interface FSMConstructorProps {
   state: string
   transitions: FSMTransitionsProps[]
+  onTransiteError?: (transite: {
+    from: string
+    to?: string
+    event?: string
+  }) => void
 }
 
 export interface FSMTransitionsProps {
@@ -10,6 +21,6 @@ export interface FSMTransitionsProps {
   from: string
   to: string
   action?: ActionCallback
-  beforeAction?: ActionCallback
-  afterAction?: ActionCallback
+  beforeTransite?: ActionCallback
+  afterTransite?: ActionCallback
 }

@@ -1,7 +1,8 @@
-import { FSMConstructorProps, FSMTransitionsProps } from '../../types/fsm';
+import { FSMConstructorProps, FSMTransitionsProps, HistoryType } from '../../types/fsm';
 declare class FiniteStateMachine {
     private _transitions;
     private _state;
+    private _onError;
     private _history;
     constructor(props: FSMConstructorProps);
     /**
@@ -12,7 +13,7 @@ declare class FiniteStateMachine {
         from: string;
         to: string;
         event: string;
-        type: "setState" | "transite";
+        type: HistoryType;
     }[];
     /**
      * 获取当前状态
@@ -31,7 +32,7 @@ declare class FiniteStateMachine {
      */
     canTransite(event: string): boolean;
     /**
-     * 设置当前状态
+     * 直接设置当前状态 该方法不会触发回调函数
      * @param state
      */
     setState(state: string): void;
@@ -39,6 +40,6 @@ declare class FiniteStateMachine {
      * @param event 触发转换的事件名
      * @returns boolean, true意味着转换成功
      */
-    transite(event?: string): void;
+    transite(event?: string): boolean;
 }
 export default FiniteStateMachine;
