@@ -9,13 +9,17 @@
     "email": "awefeng@163.com",
     "url": "https://github.com/awefeng"
   },
-  "description": "a template for npm package",
+  "description": "TS实现的状态机，包含FSM",
   "license": "MIT",
   "main": "dist/index.js",
   "module": "esm/index.js",
   "keywords": [
-    "template",
-    "npm"
+    "state",
+    "machine",
+    "state-machine",
+    "state machine",
+    "fsm",
+    "finite"
   ],
   "homepage": "https://github.com/awefeng/state-machine",
   "bugs": {

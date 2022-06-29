@@ -1,17 +1,84 @@
-# npm-template
+# state-machine
 
-> 一个支持TS语法、类型声明、CommonJS和ESModule规范的npm库模板
+> TS实现的简单状态机，目前支持`FSM(finite state machine)`
 
-[![npm-template license](https://img.shields.io/github/license/awefeng/npm-template?style=flat-square)]((https://github.com/awefeng/npm-template/blob/master/LICENSE))
-[![@awefeng/npm-template](https://img.shields.io/npm/v/@awefeng/npm-template?style=flat-square)](https://www.npmjs.com/package/@awefeng/npm-template)
-[![npm-template tag](https://img.shields.io/github/v/tag/awefeng/npm-template?style=flat-square)](https://github.com/awefeng/npm-template/tags)
+[![license](https://img.shields.io/github/license/awefeng/state-machine)]((https://github.com/awefeng/state-machine/blob/master/LICENSE))
+[![@awefeng/state-machine](https://img.shields.io/npm/v/@awefeng/state-machine)](https://www.npmjs.com/package/@awefeng/npm-template)
 
-npm包通用模板：
+## introduction
 
-- 采用rollup分别打包Commonjs和ESModule两个规范的文件
-- 支持babel
-- 支持TS并支持导出声明
-- 支持polyfill
-- 开箱即用
+用TS实现了一个简单的状态机库，目前仅包括FSM状态机，后续会增加其他类型状态机。
 
-通过此模板发布的npm包：[@awefeng/npm-template](https://www.npmjs.com/package/@awefeng/npm-template)
+支持`commonjs`和`es moudle`两种规范。
+## install
+
+项目使用 [node](http://nodejs.org) 和 [npm](https://npmjs.com)，请确保你本地安装了它们。
+
+```sh
+$ npm i @awefeng/state-machine
+```
+
+## finite State Machine
+
+有限状态机，[定义](https://zh.wikipedia.org/wiki/%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA)。
+
+![有限状态机](https://zh.wikipedia.org/wiki/%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA#/media/File:Finite_state_machine_example_with_comments.svg)
+
+### 初始化一个fsm
+1. 从包中引入`FiniteStateMachine`
+2. 初始化一个`fsm`对象，其中`state`和`transitions`为必填项，`onTransiteError`为转换过程出现错误时的回调函数
+3. `state`为默认状态
+4. `transitions`为各状态之间的关系：'from'状态通过'event'时间到达下一状态'to'
+```typescript
+  import { FiniteStateMachine } from '@awefeng/state-machine'
+
+  const fsm = new FiniteStateMachine({
+    state: 'opened', // 默认最开始的状态
+    transitions: [{
+      // 门开启时关门流程，从状态“门开着的”通过事件“关门”到达下一状态“门关着的”
+      { event: 'close', from: 'opened', to: 'closed' }, 
+      {
+        event: 'open',
+        from: 'closed',
+        to: 'opened',
+        // beforeTransite 状态过渡前的回调函数，参数from,to,event
+        beforeTransite: ({ from, to, event }) => {},
+        // afterTransite 状态过渡后的回调函数，参数from,to,event
+        afterTransite: ({ from, to, event }) => {},
+        //  状态过渡的完以后需要执行的事件（某种意义上和afterTransite是一样的）
+        action: ({ from, to, event }) => {}
+      }
+    }],
+    onTransiteError: ({from, to, event})=>{
+      // todo
+    }
+  })
+```
+
+### API
+#### fsm.getState()
+获取当前所在状态，返回值为当前`state`
+
+#### fsm.setState(state)
+设置当前状态，该API不会调用任何回到，只单纯设置状态
+
+#### fsm.getStateTransitions()
+获取当前状态下可以进行的转换，返回值为部分`transitions`
+
+#### fsm.canTransite(event)
+获取当前状态下是否可以进行某一事件的转换，返回值为`boolean`类型。例：`state`在`'closed'`状态下，`fsm.canTransite('close') //false`
+
+#### fsm.getHistory()
+获取状态改变历史，返回值为一个数组`{from: string, to: string, event: string, type :'setState' |'transite'}[]`，其中type指的是通过`setState`改变或者通过`transite`改变。
+
+#### fsm.transite(event?)
+转换状态，将当前状态转换到下一状态，返回值为`boolean`类型，转换成功为`true`，失败为`false`。
+
+如果关系图中当前状态没有传入的`event`关系，则转换失败。
+
+如果当前状态下，该`event`只有一个关系图时，可以不传入`event`，因为是唯一的。如果不是唯一的（即当前状态的可能会对应多个下一状态），则必须指定`event`，否则转换失败。
+
+
+### 欢迎贡献
+
+非常欢迎！[提一个 Issue](https://github.com/awefeng/state-machine/issues) 或者提交一个 Pull Request。
