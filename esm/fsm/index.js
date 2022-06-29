@@ -1,9 +1,10 @@
 var FiniteStateMachine = /** @class */ (function () {
     function FiniteStateMachine(props) {
-        var state = props.state, transitions = props.transitions;
+        var state = props.state, transitions = props.transitions, onTransiteError = props.onTransiteError;
         this._history = [];
         this._transitions = transitions;
         this._state = state;
+        this._onError = onTransiteError;
     }
     /**
      * 获取状态机历史记录
@@ -39,7 +40,7 @@ var FiniteStateMachine = /** @class */ (function () {
         return targets.some(function (trans) { return trans.event === event; });
     };
     /**
-     * 设置当前状态
+     * 直接设置当前状态 该方法不会触发回调函数
      * @param state
      */
     FiniteStateMachine.prototype.setState = function (state) {
@@ -59,8 +60,11 @@ var FiniteStateMachine = /** @class */ (function () {
         var _this = this;
         var targets = this._transitions.filter(function (trans) { return trans.from === _this._state; });
         if (targets.length === 0) {
-            console.error("Transition failed: There's no transition, which from is '".concat(this._state, "'."));
-            return;
+            console.error("Transition failed: There's no transition, which 'from' is current state '".concat(this._state, "'."));
+            if (this._onError) {
+                this._onError({ from: this._state, event: event });
+            }
+            return false;
         }
         var transition;
         if (!event) {
@@ -71,7 +75,10 @@ var FiniteStateMachine = /** @class */ (function () {
                 console.error(
                 // eslint-disable-next-line max-len
                 "Transition failed: there's more than one transition begin with state '".concat(this._state, "', you should choose one, use 'event' as param."));
-                return;
+                if (this._onError) {
+                    this._onError({ from: this._state, event: event });
+                }
+                return false;
             }
         }
         else {
@@ -80,11 +87,18 @@ var FiniteStateMachine = /** @class */ (function () {
                 console.error(
                 // eslint-disable-next-line max-len
                 "Transition failed: there's no transition, which from '".concat(this._state, "', and event is '").concat(event, "', transition failed."));
-                return;
+                if (this._onError) {
+                    this._onError({ from: this._state, event: event });
+                }
+                return false;
             }
         }
-        if (typeof transition.beforeAction === 'function') {
-            transition.beforeAction(transition.from, transition.to, transition.event);
+        if (typeof transition.beforeTransite === 'function') {
+            transition.beforeTransite({
+                from: transition.from,
+                to: transition.to,
+                event: transition.event
+            });
         }
         this._state = transition.to;
         this._history.push({
@@ -93,9 +107,21 @@ var FiniteStateMachine = /** @class */ (function () {
             event: transition.event,
             type: 'transite'
         });
-        if (typeof transition.afterAction === 'function') {
-            transition.afterAction(transition.from, transition.to, transition.event);
+        if (typeof transition.action === 'function') {
+            transition.action({
+                from: transition.from,
+                to: transition.to,
+                event: transition.event
+            });
         }
+        if (typeof transition.afterTransite === 'function') {
+            transition.afterTransite({
+                from: transition.from,
+                to: transition.to,
+                event: transition.event
+            });
+        }
+        return true;
     };
     return FiniteStateMachine;
 }());

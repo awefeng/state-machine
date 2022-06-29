@@ -1,19 +1,25 @@
-import { FSMConstructorProps, FSMTransitionsProps } from '../../types/fsm'
+import {
+  FSMConstructorProps,
+  FSMTransitionsProps,
+  HistoryType
+} from '../../types/fsm'
 
 class FiniteStateMachine {
   private _transitions: FSMTransitionsProps[]
   private _state: string
+  private _onError
   private _history: {
     from: string
     to: string
     event: string
-    type: 'setState' | 'transite'
+    type: HistoryType
   }[]
   constructor(props: FSMConstructorProps) {
-    const { state, transitions } = props
+    const { state, transitions, onTransiteError } = props
     this._history = []
     this._transitions = transitions
     this._state = state
+    this._onError = onTransiteError
   }
 
   /**
@@ -56,7 +62,7 @@ class FiniteStateMachine {
   }
 
   /**
-   * 设置当前状态
+   * 直接设置当前状态 该方法不会触发回调函数
    * @param state
    */
   setState(state: string) {
@@ -79,9 +85,12 @@ class FiniteStateMachine {
     )
     if (targets.length === 0) {
       console.error(
-        `Transition failed: There's no transition, which from is '${this._state}'.`
+        `Transition failed: There's no transition, which 'from' is current state '${this._state}'.`
       )
-      return
+      if (this._onError) {
+        this._onError({ from: this._state, event })
+      }
+      return false
     }
 
     let transition: FSMTransitionsProps | undefined
@@ -94,7 +103,10 @@ class FiniteStateMachine {
           // eslint-disable-next-line max-len
           `Transition failed: there's more than one transition begin with state '${this._state}', you should choose one, use 'event' as param.`
         )
-        return
+        if (this._onError) {
+          this._onError({ from: this._state, event })
+        }
+        return false
       }
     } else {
       transition = targets.find((target) => target.event === event)
@@ -103,12 +115,19 @@ class FiniteStateMachine {
           // eslint-disable-next-line max-len
           `Transition failed: there's no transition, which from '${this._state}', and event is '${event}', transition failed.`
         )
-        return
+        if (this._onError) {
+          this._onError({ from: this._state, event })
+        }
+        return false
       }
     }
 
-    if (typeof transition.beforeAction === 'function') {
-      transition.beforeAction(transition.from, transition.to, transition.event)
+    if (typeof transition.beforeTransite === 'function') {
+      transition.beforeTransite({
+        from: transition.from,
+        to: transition.to,
+        event: transition.event
+      })
     }
 
     this._state = transition.to
@@ -119,9 +138,21 @@ class FiniteStateMachine {
       type: 'transite'
     })
 
-    if (typeof transition.afterAction === 'function') {
-      transition.afterAction(transition.from, transition.to, transition.event)
+    if (typeof transition.action === 'function') {
+      transition.action({
+        from: transition.from,
+        to: transition.to,
+        event: transition.event
+      })
     }
+    if (typeof transition.afterTransite === 'function') {
+      transition.afterTransite({
+        from: transition.from,
+        to: transition.to,
+        event: transition.event
+      })
+    }
+    return true
   }
 }
 
