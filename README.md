@@ -20,8 +20,9 @@ npm i @awefeng/state-machine
 
 ## Finite State Machine
 
-有限状态机，[定义](https://zh.wikipedia.org/wiki/%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA)。
+定义: [有限状态机](https://zh.wikipedia.org/wiki/%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA)。
 
+示例: [FSM Demo](https://github.com/awefeng/state-machine/blob/master/examples/fsm.md)
 ### 初始化一个FSM
 
 1. 从包中引入`FiniteStateMachine`
@@ -53,7 +54,6 @@ npm i @awefeng/state-machine
     onTransiteError: ({from, to, event}) => console.log
   })
 ```
-
 ### API
 #### fsm.getState()
 获取当前所在状态，返回值为当前`state`
