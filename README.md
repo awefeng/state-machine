@@ -3,7 +3,7 @@
 > TS实现的简单状态机，目前支持`FSM(finite state machine)`
 
 [![license](https://img.shields.io/github/license/awefeng/state-machine)]((https://github.com/awefeng/state-machine/blob/master/LICENSE))
-[![@awefeng/state-machine](https://img.shields.io/npm/v/@awefeng/state-machine)](https://www.npmjs.com/package/@awefeng/npm-template)
+[![@awefeng/state-machine](https://img.shields.io/npm/v/@awefeng/state-machine)](https://www.npmjs.com/package/@awefeng/state-machine)
 
 ## introduction
 
